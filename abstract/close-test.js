@@ -1,9 +1,9 @@
-module.exports.close = function (leveldown, test, testCommon) {
+module.exports.close = function (leveldown, test, testCommon, options) {
   testCommon = testCommon || require('../testCommon')
   test('test close()', function (t) {
     var db = leveldown(testCommon.location())
 
-    db.open(function (err) {
+    db.open(options, function (err) {
       t.error(err)
       t.throws(
         db.close.bind(db)

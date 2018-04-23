@@ -1,11 +1,11 @@
 var db
 
-module.exports.setUp = function (leveldown, test, testCommon, data) {
+module.exports.setUp = function (leveldown, test, testCommon, data, options) {
   test('setUp common', testCommon.setUp)
   test('setUp db', function (t) {
     db = leveldown(testCommon.location())
-    db.open(function () {
-      db.batch(data.map(function (d) {
+    db.open(options, function () {
+      db.batch(options, data.map(function (d) {
         return {
           type: 'put',
           key: d.key,
@@ -354,7 +354,7 @@ module.exports.tearDown = function (test, testCommon) {
   })
 }
 
-module.exports.all = function (leveldown, test, testCommon) {
+module.exports.all = function (leveldown, test, testCommon, options) {
   testCommon = testCommon || require('../testCommon')
 
   var data = (function () {
@@ -371,7 +371,7 @@ module.exports.all = function (leveldown, test, testCommon) {
     return d
   }())
 
-  module.exports.setUp(leveldown, test, testCommon, data)
+  module.exports.setUp(leveldown, test, testCommon, data, options)
   module.exports.range(leveldown, test, testCommon, data)
   module.exports.tearDown(test, testCommon)
 }

@@ -2,7 +2,7 @@ module.exports.setUp = function (test, testCommon) {
   test('setUp', testCommon.setUp)
 }
 
-module.exports.args = function (leveldown, test, testCommon) {
+module.exports.args = function (leveldown, test, testCommon, options) {
   test('test database open no-arg throws', function (t) {
     var db = leveldown(testCommon.location())
     t.throws(
@@ -16,7 +16,7 @@ module.exports.args = function (leveldown, test, testCommon) {
   test('test callback-less, 1-arg, open() throws', function (t) {
     var db = leveldown(testCommon.location())
     t.throws(
-      db.open.bind(db, {})
+      db.open.bind(db, options || {})
       , { name: 'Error', message: 'open() requires a callback argument' }
       , 'callback-less, 1-arg open() throws'
     )
@@ -24,12 +24,12 @@ module.exports.args = function (leveldown, test, testCommon) {
   })
 }
 
-module.exports.open = function (leveldown, test, testCommon) {
+module.exports.open = function (leveldown, test, testCommon, options) {
   test('test database open, no options', function (t) {
     var db = leveldown(testCommon.location())
 
     // default createIfMissing=true, errorIfExists=false
-    db.open(function (err) {
+    db.open(options, function (err) {
       t.error(err)
       db.close(function () {
         t.end()
@@ -41,7 +41,7 @@ module.exports.open = function (leveldown, test, testCommon) {
     var db = leveldown(testCommon.location())
 
     // default createIfMissing=true, errorIfExists=false
-    db.open({}, function (err) {
+    db.open(options || {}, function (err) {
       t.error(err)
       db.close(function () {
         t.end()
@@ -51,11 +51,11 @@ module.exports.open = function (leveldown, test, testCommon) {
   test('test database open, close and open', function (t) {
     var db = leveldown(testCommon.location())
 
-    db.open(function (err) {
+    db.open(options, function (err) {
       t.error(err)
       db.close(function (err) {
         t.error(err)
-        db.open(function (err) {
+        db.open(options, function (err) {
           t.error(err)
           db.close(function () {
             t.end()
@@ -66,12 +66,12 @@ module.exports.open = function (leveldown, test, testCommon) {
   })
 }
 
-module.exports.openAdvanced = function (leveldown, test, testCommon) {
+module.exports.openAdvanced = function (leveldown, test, testCommon, options) {
   test('test database open createIfMissing:false', function (t) {
     var db = leveldown(testCommon.location())
     var async = false
 
-    db.open({ createIfMissing: false }, function (err) {
+    db.open(Object.assign({}, options, { createIfMissing: false }), function (err) {
       t.ok(err, 'error')
       t.ok(/does not exist/.test(err.message), 'error is about dir not existing')
       t.ok(async, 'callback is asynchronous')
@@ -86,7 +86,7 @@ module.exports.openAdvanced = function (leveldown, test, testCommon) {
     var db = leveldown(location)
 
     // make a valid database first, then close and dispose
-    db.open({}, function (err) {
+    db.open(options, function (err) {
       t.error(err)
       db.close(function (err) {
         t.error(err)
@@ -96,7 +96,9 @@ module.exports.openAdvanced = function (leveldown, test, testCommon) {
 
         var async = false
 
-        db.open({ createIfMissing: false, errorIfExists: true }, function (err) {
+        var opts = Object.assign({}, options, { createIfMissing: false, errorIfExists: true })
+
+        db.open(opts, function (err) {
           t.ok(err, 'error')
           t.ok(/exists/.test(err.message), 'error is about already existing')
           t.ok(async, 'callback is asynchronous')
@@ -113,11 +115,11 @@ module.exports.tearDown = function (test, testCommon) {
   test('tearDown', testCommon.tearDown)
 }
 
-module.exports.all = function (leveldown, test, testCommon) {
+module.exports.all = function (leveldown, test, testCommon, options) {
   testCommon = testCommon || require('../testCommon')
-  module.exports.setUp(test, testCommon)
-  module.exports.args(leveldown, test, testCommon)
-  module.exports.open(leveldown, test, testCommon)
-  module.exports.openAdvanced(leveldown, test, testCommon)
+  module.exports.setUp(test, testCommon, options)
+  module.exports.args(leveldown, test, testCommon, options)
+  module.exports.open(leveldown, test, testCommon, options)
+  module.exports.openAdvanced(leveldown, test, testCommon, options)
   module.exports.tearDown(test, testCommon)
 }

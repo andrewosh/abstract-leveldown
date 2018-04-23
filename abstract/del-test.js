@@ -3,17 +3,17 @@ var leveldown
 var testCommon
 var verifyNotFoundError = require('./util').verifyNotFoundError
 
-module.exports.setUp = function (_leveldown, test, _testCommon) {
+module.exports.setUp = function (_leveldown, test, _testCommon, options) {
   test('setUp common', _testCommon.setUp)
   test('setUp db', function (t) {
     leveldown = _leveldown
     testCommon = _testCommon
     db = leveldown(testCommon.location())
-    db.open(t.end.bind(t))
+    db.open(options, t.end.bind(t))
   })
 }
 
-module.exports.args = function (test) {
+module.exports.args = function (test, options) {
   test('test argument-less del() throws', function (t) {
     t.throws(
       db.del.bind(db)
@@ -49,7 +49,7 @@ module.exports.args = function (test) {
       t.deepEqual(key, { foo: 'bar' })
       process.nextTick(callback)
     }
-    db.open(function () {
+    db.open(options, function () {
       db.del({ foo: 'bar' }, function (err) {
         t.error(err)
         db.close(t.error.bind(t))
@@ -88,10 +88,10 @@ module.exports.tearDown = function (test, testCommon) {
   })
 }
 
-module.exports.all = function (leveldown, test, testCommon) {
+module.exports.all = function (leveldown, test, testCommon, options) {
   testCommon = testCommon || require('../testCommon')
-  module.exports.setUp(leveldown, test, testCommon)
-  module.exports.args(test)
+  module.exports.setUp(leveldown, test, testCommon, options)
+  module.exports.args(test, options)
   module.exports.del(test)
   module.exports.tearDown(test, testCommon)
 }

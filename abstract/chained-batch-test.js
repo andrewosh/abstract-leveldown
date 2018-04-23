@@ -22,11 +22,11 @@ function collectBatchOps (batch) {
   return _operations
 }
 
-module.exports.setUp = function (leveldown, test, testCommon) {
+module.exports.setUp = function (leveldown, test, testCommon, options) {
   test('setUp common', testCommon.setUp)
   test('setUp db', function (t) {
     db = leveldown(testCommon.location())
-    db.open(t.end.bind(t))
+    db.open(options, t.end.bind(t))
   })
 }
 
@@ -254,9 +254,9 @@ module.exports.tearDown = function (test, testCommon) {
   })
 }
 
-module.exports.all = function (leveldown, test, testCommon) {
+module.exports.all = function (leveldown, test, testCommon, options) {
   testCommon = testCommon || require('../testCommon')
-  module.exports.setUp(leveldown, test, testCommon)
+  module.exports.setUp(leveldown, test, testCommon, options)
   module.exports.args(test)
   module.exports.batch(test, testCommon)
   module.exports.tearDown(test, testCommon)
