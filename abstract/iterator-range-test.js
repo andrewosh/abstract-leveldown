@@ -5,7 +5,7 @@ module.exports.setUp = function (leveldown, test, testCommon, data, options) {
   test('setUp db', function (t) {
     db = leveldown(testCommon.location())
     db.open(options, function () {
-      db.batch(options, data.map(function (d) {
+      db.batch(data.map(function (d) {
         return {
           type: 'put',
           key: d.key,
