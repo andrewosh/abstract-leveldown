@@ -187,6 +187,6 @@ module.exports.all = function (leveldown, test, testCommon, options) {
   module.exports.args(test)
   module.exports.sequence(test)
   module.exports.iterator(leveldown, test, testCommon)
-  module.exports.snapshot(leveldown, test, testCommon, options)
+  // module.exports.snapshot(leveldown, test, testCommon, options)
   module.exports.tearDown(test, testCommon)
 }
